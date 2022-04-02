@@ -36,23 +36,14 @@ make all # builds, brings containers up, runs tests
 ## Creating a local virtualenv (optional)
 
 ```sh
-python3.8 -m venv .venv && source .venv/bin/activate # or however you like to create virtualenvs
-
-# for chapter 1
-pip install pytest 
-
-# for chapter 2
-pip install pytest sqlalchemy
-
-# for chapter 4+5
-pip install -r requirements.txt
-
-# for chapter 6+
-pip install -r requirements.txt
-pip install -e src/
+poetry install
 ```
 
-<!-- TODO: use a make pipinstall command -->
+To activate the virtualenv:
+
+```sh
+poetry shell
+```
 
 
 ## Running the tests
@@ -65,9 +56,9 @@ make integration-tests
 make e2e-tests
 # or, if you have a local virtualenv
 make up
-pytest tests/unit
-pytest tests/integration
-pytest tests/e2e
+poetry run pytest tests/unit
+poetry run pytest tests/integration
+poetry run pytest tests/e2e
 ```
 
 ## Makefile

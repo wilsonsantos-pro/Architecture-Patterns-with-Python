@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "allocation"
+version = "0.1.0"
+description = ""
+authors = ["Wilson Santos <wilson.santos.dev87@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+SQLAlchemy = "^1.4.34"
+Flask = "^2.1.1"
+psycopg2-binary = "^2.9.3"
+redis = "^4.2.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.1"
+pytest-icdiff = "^0.5"
+mypy = "^0.942"
+pylint = "^2.13.4"
+requests = "^2.27.1"
+tenacity = "^8.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
