@@ -4,10 +4,13 @@ import time
 import traceback
 from typing import List
 from unittest.mock import Mock
+
 import pytest
+
 from allocation.domain import model
 from allocation.service_layer import unit_of_work
-from ..random_refs import random_sku, random_batchref, random_orderid
+
+from ..random_refs import random_batchref, random_orderid, random_sku
 
 pytestmark = pytest.mark.usefixtures("mappers")
 
@@ -44,7 +47,7 @@ def test_uow_can_retrieve_a_batch_and_allocate_to_it(sqlite_session_factory):
 
     uow = unit_of_work.SqlAlchemyUnitOfWork(sqlite_session_factory)
     with uow:
-        product = uow.products.get(sku="HIPSTER-WORKBENCH")
+        product = uow.products.get("HIPSTER-WORKBENCH")
         line = model.OrderLine("o1", "HIPSTER-WORKBENCH", 10)
         product.allocate(line)
         uow.commit()
@@ -82,13 +85,13 @@ def try_to_allocate(orderid, sku, exceptions, session_factory):
     line = model.OrderLine(orderid, sku, 10)
     try:
         with unit_of_work.SqlAlchemyUnitOfWork(session_factory) as uow:
-            product = uow.products.get(sku=sku)
+            product = uow.products.get(sku)
             product.allocate(line)
             time.sleep(0.2)
             uow.commit()
-    except Exception as e:  # pylint: disable=broad-except
+    except Exception as exc:  # pylint: disable=broad-except
         print(traceback.format_exc())
-        exceptions.append(e)
+        exceptions.append(exc)
 
 
 def test_concurrent_updates_to_version_are_not_allowed(postgres_session_factory):

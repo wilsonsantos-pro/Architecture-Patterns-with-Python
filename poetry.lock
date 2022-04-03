@@ -403,6 +403,21 @@ hiredis = ["hiredis (>=1.0.0)"]
 ocsp = ["cryptography (>=36.0.1)", "pyopenssl (==20.0.1)", "requests (>=2.26.0)"]
 
 [[package]]
+name = "repository-pattern"
+version = "0.1.0"
+description = ""
+category = "main"
+optional = false
+python-versions = ">=3.8,<4.0"
+
+[package.dependencies]
+SQLAlchemy = ">=1.4.32,<2.0.0"
+
+[package.source]
+type = "file"
+url = "../../../dist/repository_pattern-0.1.0-py3-none-any.whl"
+
+[[package]]
 name = "requests"
 version = "2.27.1"
 description = "Python HTTP for Humans."
@@ -526,7 +541,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "75f829d8b4d327a983a00df4c5fe07a2d563588321f26b7381549d6422fd86ef"
+content-hash = "33b674d682d9649d9e210dee0338cbe389364b04d23a81b8768dc379739fddcf"
 
 [metadata.files]
 astroid = [
@@ -867,6 +882,9 @@ pytest-icdiff = [
 redis = [
     {file = "redis-4.2.1-py3-none-any.whl", hash = "sha256:69d05fac17bf3f43937afbb775c536eb516bd21355a4f17d59a966f4a531ce71"},
     {file = "redis-4.2.1.tar.gz", hash = "sha256:fe45513881229dbee610620b9e0817b1f48c47ba635870320fd44a712204bbdd"},
+]
+repository-pattern = [
+    {file = "repository_pattern-0.1.0-py3-none-any.whl", hash = "sha256:f92fd82fe61c38363633f496ff7c82f453a2c52eedf33c08a0c4bc1ccb12e695"},
 ]
 requests = [
     {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d"},

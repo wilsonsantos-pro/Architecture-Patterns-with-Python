@@ -1,17 +1,20 @@
 # pylint: disable=no-self-use
 from __future__ import annotations
+
 from collections import defaultdict
 from datetime import date
-from typing import Dict, List
+from typing import Dict, List, Optional
+
 import pytest
+from repository_pattern import repository
+
 from allocation import bootstrap
-from allocation.domain import commands
-from allocation.service_layer import handlers
-from allocation.adapters import notifications, repository
-from allocation.service_layer import unit_of_work
+from allocation.adapters import notifications
+from allocation.domain import commands, model
+from allocation.service_layer import handlers, unit_of_work
 
 
-class FakeRepository(repository.AbstractRepository):
+class FakeRepository(repository.AbstractRepository[model.Product]):
     def __init__(self, products):
         super().__init__()
         self._products = set(products)
@@ -22,10 +25,20 @@ class FakeRepository(repository.AbstractRepository):
     def _get(self, sku):
         return next((p for p in self._products if p.sku == sku), None)
 
-    def _get_by_batchref(self, batchref):
+    def get_by_batchref(self, batchref):
         return next(
             (p for p in self._products for b in p.batches if b.reference == batchref),
             None,
+        )
+
+    def _get_list(
+        self,
+        page: Optional[int] = None,
+        per_page: Optional[int] = None,
+        count: bool = True,
+    ) -> repository.Pagination[model.Product]:
+        return repository.Pagination(
+            items=list(self._products),
         )
 
 
@@ -69,9 +82,7 @@ class TestAddBatch:
         bus = bootstrap_test_app()
         bus.handle(commands.CreateBatch("b1", "GARISH-RUG", 100, None))
         bus.handle(commands.CreateBatch("b2", "GARISH-RUG", 99, None))
-        assert "b2" in [
-            b.reference for b in bus.uow.products.get("GARISH-RUG").batches
-        ]
+        assert "b2" in [b.reference for b in bus.uow.products.get("GARISH-RUG").batches]
 
 
 class TestAllocate:
@@ -106,7 +117,7 @@ class TestAllocate:
         bus.handle(commands.CreateBatch("b1", "POPULAR-CURTAINS", 9, None))
         bus.handle(commands.Allocate("o1", "POPULAR-CURTAINS", 10))
         assert fake_notifs.sent["stock@made.com"] == [
-            f"Out of stock for POPULAR-CURTAINS",
+            "Out of stock for POPULAR-CURTAINS",
         ]
 
 
@@ -114,7 +125,7 @@ class TestChangeBatchQuantity:
     def test_changes_available_quantity(self):
         bus = bootstrap_test_app()
         bus.handle(commands.CreateBatch("batch1", "ADORABLE-SETTEE", 100, None))
-        [batch] = bus.uow.products.get(sku="ADORABLE-SETTEE").batches
+        [batch] = bus.uow.products.get("ADORABLE-SETTEE").batches
         assert batch.available_quantity == 100
 
         bus.handle(commands.ChangeBatchQuantity("batch1", 50))
@@ -130,7 +141,7 @@ class TestChangeBatchQuantity:
         ]
         for msg in history:
             bus.handle(msg)
-        [batch1, batch2] = bus.uow.products.get(sku="INDIFFERENT-TABLE").batches
+        [batch1, batch2] = bus.uow.products.get("INDIFFERENT-TABLE").batches
         assert batch1.available_quantity == 10
         assert batch2.available_quantity == 50
 
